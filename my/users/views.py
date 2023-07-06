@@ -3,12 +3,19 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 
 from .serializers import RegisterSerializer, LoginSelializer, ProfileSerializer
-
 from .models import Profile
+
+
+class ProfileView(generics.RetrieveUpdateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+
 
 
 class LoginView(generics.GenericAPIView):
@@ -19,10 +26,6 @@ class LoginView(generics.GenericAPIView):
         serialzer.is_valid(raise_exception=True)
         token = serialzer.validated_data
         return Response({"token":token.key}, status=status.HTTP_200_OK)
-    
 
-class ProfileView(generics.RetrieveUpdateAPIView):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
 
 # Create your views here.
