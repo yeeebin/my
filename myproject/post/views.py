@@ -1,26 +1,18 @@
+from rest_framework import viewsets
+from users.models import Profile
+from .models import Post
+from .permissions import CustomReadOnly
+from .serializers import PostSerializer, PostCreateSerializer
 
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import *
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    permission_classes = [CustomReadOnly]
 
-def post_list(request):
-    posts = Post.objects.filter().order_by('-created_at')
-    return render(request, 'blog/post_list.html', {'posts': posts})
-
-
-def post_create(request):
-    if request.method == "POST":
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.save()
-            return redirect('post_list')
-        else:
-            form = PostForm()
-        return render(request, 'blog/post_list.html', {'form':form})
-
-
-def post_delete():
-
-
-def post_update():
-
+    def get_serializer_class(self):
+        if self.action == 'list' or 'retrieve':
+            return PostSerializer
+        return PostCreateSerializer
+    
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(author=self.request.user, profile=profile)
