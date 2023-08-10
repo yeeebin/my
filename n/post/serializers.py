@@ -1,23 +1,18 @@
 from rest_framework import serializers
-from .models import Tag, Post, Comment, Reply
 
 
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = '__all__'
+from users.serializers import ProfileSerializer
+from .models import Post
 
 class PostSerializer(serializers.ModelSerializer):
+    Profile = ProfileSerializer(read_only=True)
+
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ("pk", "profile", "body", "images", "likes", "created_at", "updated_at")
 
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = '__all__'
 
-class ReplySerializer(serializers.ModelSerializer):
+class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Reply
-        fields = '__all__'
+        model = Post
+        fields = ("body", "images")
